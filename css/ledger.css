@@ -32,7 +32,7 @@ tr[data-matching_reciept="YES"] td[id*="matching_reciept"] {
     background-color: lightgreen;
 }
 tr[data-account="Discover"] {
-    background-color: lightgoldenrodyellow;
+    background-color: rgb(255,195,90);
 }
 /*
 */
