@@ -1,0 +1,44 @@
+{
+  "name": "interactive-ledger",
+  "version": "1.0.0",
+  "description": "Displays bank account information in a veratile format",
+  "main": "ledger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stadelmanma/Interactive-Ledger.git"
+  },
+  "author": "Matthew Stadelman <stadelmanma@gmail.com> (https://github.com/stadelmanma)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/stadelmanma/Interactive-Ledger/issues"
+  },
+  "homepage": "https://github.com/stadelmanma/Interactive-Ledger#readme",
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+      "indent": [
+        "error",
+        4
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "no-console": 0,
+      "quotes": [
+        1,
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
+    }
+  }
+}
