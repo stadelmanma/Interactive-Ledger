@@ -1,0 +1,41 @@
+table {
+    margin: auto;
+    border-collapse: collapse;
+}
+th {
+    position: relative;
+    border: 1px solid rgb(0,0,0);
+    padding: 5px;
+    font-size: 14px;
+}
+td {
+    border: 1px solid rgb(0,0,0);
+    padding: 5px;
+    white-space: nowrap;
+}
+tr {
+    box-shadow: none;
+    transition: box-shadow 3s;
+    transition-delay: 1s;
+}
+tr.hover:hover {
+    background-color: rgb(235,235,235);
+}
+tr.active:active {
+    box-shadow: 0rem 0rem 0.3rem 0.1rem rgb(75,155,215);
+    transition: box-shadow 0s;
+}
+tr[data-matching_reciept="NO"] td[id*="matching_reciept"] {
+    background-color: lightcoral;
+}
+tr[data-matching_reciept="YES"] td[id*="matching_reciept"] {
+    background-color: lightgreen;
+}
+tr[data-account="Discover"] {
+    background-color: lightgoldenrodyellow;
+}
+/*
+*/
+#table-header {
+    color: black;
+}

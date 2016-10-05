@@ -20,14 +20,14 @@ Maybe there is some Node functionality I can use? Since this code is entirely lo
 var LEDGER = (function() {
     var CONSTANTS = {
         META_DATA: [
-            {column_name: 'account', column_nickname: 'Account', data_type: '', order_index: 300},
-            {column_name: 'amount', column_nickname: 'Amount', data_type: '', order_index: 200},
-            //{column_name: 'balance', column_nickname: 'Balance', data_type: '', order_index: 999},
-            {column_name: 'category', column_nickname: 'Cataegory', data_type: '', order_index: 350},
-            {column_name: 'comments', column_nickname: 'Comments', data_type: '', order_index: 400},
-            {column_name: 'description', column_nickname: 'Description', data_type: '', order_index: 150},
-            {column_name: 'effective_date', column_nickname: 'Date', data_type: '', order_index: 100},
-            {column_name: 'matching_reciept', column_nickname: 'Validated', data_type: '', order_index: 250}
+            {column_name: 'effective_date', column_nickname: 'Date', data_type: 'date', order_index: 100},
+            {column_name: 'description', column_nickname: 'Description', data_type: 'text', order_index: 150},
+            {column_name: 'amount', column_nickname: 'Amount', data_type: 'monetary', order_index: 200},
+            {column_name: 'matching_reciept', column_nickname: 'Validated', data_type: 'info', order_index: 250},
+            {column_name: 'account', column_nickname: 'Account', data_type: 'info', order_index: 300},
+            //{column_name: 'balance', column_nickname: 'Balance', data_type: 'float', order_index: 999},
+            {column_name: 'category', column_nickname: 'Category', data_type: 'info', order_index: 350},
+            {column_name: 'comments', column_nickname: 'Comments', data_type: 'text', order_index: 400}
         ]
     };
     //
@@ -65,7 +65,7 @@ var LEDGER = (function() {
         row.forEach(function(datum, index) {
             datum = datum.replace(/^"|"$/g, '');
             if (col_names[index] === 'effective_date') {
-                datum = new Date(datum);
+                datum = new Date(datum).yyyymmdd();
             }
             else if (col_names[index] === 'amount') {
                 datum = Number.parse(datum);
@@ -73,10 +73,30 @@ var LEDGER = (function() {
             else if (col_names[index] === 'balance') {
                 datum = Number.parse(datum);
             }
+            else if (col_names[index] === 'matching_reciept') {
+                datum = datum.toUpperCase().trim();
+                datum = datum=='OK' ? 'YES' : 'NO';
+            }
             obj[col_names[index]] = datum;
         });
         //
         this[i] = obj;
+    }
+    //
+    // builds an HTML table of ledger data
+    function buildLedgerTable(data) {
+        var table_args = {
+                data_arr: data,
+                col_meta_data: getConstant('META_DATA'),
+                table_output_id: 'table-div',
+                row_id_prefix: 'ledger-',
+                no_page_nav: true,
+                head_row_args: {sortable: false},
+                page_nav_args: {}
+            },
+            table = make_standard_table(table_args);
+        //
+        document.getElementById('table-div').safeAppendChild(table);
     }
     //
     // processes the CSV data into an array of objects
@@ -85,6 +105,7 @@ var LEDGER = (function() {
         //
         // converting data string into an array
         data = data.replace(/(^.*);/, '');
+        data = data.replace(/\n$/, '');
         data = data.split(/\n/g);
         //
         // getting the column headers
@@ -101,13 +122,13 @@ var LEDGER = (function() {
         // processing data rows
         data.forEach(processRow.bind(data, cols));
         console.log(data);
+        buildLedgerTable(data);
     }
     //
     // returning interface
     return {
         getConstant: getConstant,
-        loadData: function(filePath) { loadData(filePath, processTabDelimData);},
-        processTabDelimData: processTabDelimData
+        loadData: function(filePath) { loadData(filePath, processTabDelimData);}
     };
 }());
 //
