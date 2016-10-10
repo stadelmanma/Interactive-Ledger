@@ -24,10 +24,11 @@ var LEDGER = (function() {
             {column_name: 'description', column_nickname: 'Description', data_type: 'text', order_index: 150},
             {column_name: 'amount', column_nickname: 'Amount', data_type: 'monetary', order_index: 200},
             {column_name: 'matching_reciept', column_nickname: 'Validated', data_type: 'info', order_index: 250},
-            {column_name: 'account', column_nickname: 'Account', data_type: 'info', order_index: 300},
+            //{column_name: 'account', column_nickname: 'Account', data_type: 'info', order_index: 300},
             //{column_name: 'balance', column_nickname: 'Balance', data_type: 'float', order_index: 999},
             {column_name: 'category', column_nickname: 'Category', data_type: 'info', order_index: 350},
-            {column_name: 'comments', column_nickname: 'Comments', data_type: 'text', order_index: 400}
+            {column_name: 'subcategory', column_nickname: 'Subcategory', data_type: 'text', order_index: 400},
+            {column_name: 'comments', column_nickname: 'Comments', data_type: 'text', order_index: 450}
         ]
     };
     //
@@ -75,7 +76,7 @@ var LEDGER = (function() {
             }
             else if (col_names[index] === 'matching_reciept') {
                 datum = datum.toUpperCase().trim();
-                datum = datum=='OK' ? 'YES' : 'NO';
+                datum = datum === 'OK' ? 'YES' : 'NO';
             }
             obj[col_names[index]] = datum;
         });
@@ -94,7 +95,29 @@ var LEDGER = (function() {
                 head_row_args: {sortable: false},
                 page_nav_args: {}
             },
-            table = make_standard_table(table_args);
+            table = make_standard_table(table_args),
+            tableRows = table.querySelectorAll('TR'),
+            amount, cell;
+        //
+        // styling the amount cell for negative numbers
+        for (var i = 1; i < tableRows.length; i++) {
+            amount = Number(tableRows[i].dataset['amount']);
+            cell = tableRows[i].querySelector('[id*=amount]');
+            //
+            if (amount < 0) {
+                amount = cell.childNodes[1].textContent;
+                cell.childNodes[1].textContent = '({})'.format(amount);
+                cell.style.color = 'rgb(245,0,0)';
+            }
+            else {
+                cell = tableRows[i].querySelector('[id*=effective_date]');
+                cell.style.fontWeight = 'bold';
+                cell = tableRows[i].querySelector('[id*=description]');
+                cell.style.fontWeight = 'bold';
+                cell = tableRows[i].querySelector('[id*=amount]');
+                cell.style.fontWeight = 'bold';
+            }
+        }
         //
         document.getElementById('table-div').safeAppendChild(table);
     }
@@ -117,11 +140,9 @@ var LEDGER = (function() {
             col = col.replace(/ +/g, '_');
             this[i] = col;
         }, cols);
-        console.log(cols);
         //
         // processing data rows
         data.forEach(processRow.bind(data, cols));
-        console.log(data);
         buildLedgerTable(data);
     }
     //

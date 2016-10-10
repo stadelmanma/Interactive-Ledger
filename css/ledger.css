@@ -26,13 +26,13 @@ tr.active:active {
     transition: box-shadow 0s;
 }
 tr[data-matching_reciept="NO"] td[id*="matching_reciept"] {
-    background-color: lightcoral;
+    background-color: rgba(240, 128, 128, 0.7);
 }
 tr[data-matching_reciept="YES"] td[id*="matching_reciept"] {
-    background-color: lightgreen;
+    background-color: rgba(144, 238, 144, 0.7);
 }
 tr[data-account="Discover"] {
-    background-color: rgb(255,195,90);
+    background-color: rgba(255, 195, 90, 0.7);
 }
 /*
 */
