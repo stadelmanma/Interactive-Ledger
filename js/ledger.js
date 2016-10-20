@@ -84,6 +84,98 @@ var LEDGER = (function() {
         this[i] = obj;
     }
     //
+    // outputs a totals cell
+    function output_totals_cells(row, rowSpan, total) {
+        var style = {
+                textAlign: 'center',
+                verticalAlign: 'middle',
+                backgroundColor: 'white',
+                color: 'rgb(0,0,0)'
+            },
+            cell = document.createElementWithAttr('TD',{rowSpan: rowSpan, style: style}),
+            fmt = '{}';
+        //
+        if (total < 0) {
+            fmt = '({})';
+            cell.style.color = 'rgb(240,0,0)';
+        }
+        //
+        cell = cell.cloneNode();
+        cell.rowSpan = rowSpan + 1;
+        row.appendChild(cell)
+        process_data_type(total, 'monetary', cell)
+        cell.childNodes[1].textContent = fmt.format(Math.round10(total, 2, true));
+    }
+    //
+    // generates weekly categorial sums
+    function calculateWeeklySums(table, tableRows) {
+        var startDate, endDate, testDate,
+            totals = {
+                walmart: 0, gas: 0, 'misc.': 0, deposit: 0,
+                withdrawal: 0, budgeted: 0, discover: 0
+            },
+            overallTotal = 0,
+            totalDeficit = 0,
+            cell = document.createElement('TH'), rowSpan,
+            i, category, week;
+        //
+        // adding two new totals cells to the table header
+        cell.textContent = 'Week Total:'
+        tableRows[0].appendChild(cell);
+        cell = cell.cloneNode();
+        cell.textContent = 'Total Deficit:'
+        tableRows[0].appendChild(cell);
+        cell = cell.cloneNode();
+        cell.textContent = 'Category Totals:'
+        tableRows[0].appendChild(cell);
+        //
+        // setting initial start and end dates
+        startDate = new Date(tableRows[1].dataset.effective_date);
+        startDate.setDate(startDate.getDate() - startDate.getDay() - 7);
+        endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 6);
+        //
+        // stepping through rows and summing data
+        week = 1;
+        rowSpan = 0;
+        cell = document.createElementWithAttr('TD',
+            {style: {textAlign: 'center', verticalAlign: 'middle', backgroundColor: 'white'}});
+        for (i = 1; i < tableRows.length; i++) {
+            testDate = new Date(tableRows[i].dataset.effective_date);
+            if (testDate <= endDate) {
+                // incrementing totals
+                category = tableRows[i].dataset.category.toLowerCase().trim();
+                totals[category] += Number(tableRows[i].dataset.amount);
+                rowSpan += 1;
+            }
+            else {
+                //
+                // updating dates
+                startDate.setDate(startDate.getDate() + 7);
+                endDate.setDate(endDate.getDate() + 7);
+                if (rowSpan == 0) { continue;}
+                //
+                // incrementing overall totals
+                overallTotal = totals.walmart;
+                overallTotal += totals.gas;
+                overallTotal += totals['misc.'];
+                totalDeficit += overallTotal + 200;
+                //
+                // outputting totals cells
+                output_totals_cells(tableRows[i - rowSpan - 1], rowSpan, overallTotal);
+                output_totals_cells(tableRows[i - rowSpan - 1], rowSpan, totalDeficit);
+                //
+                // resetting values
+                totals = {
+                    walmart: 0, gas: 0, 'misc.': 0, deposit: 0,
+                    withdrawal: 0, budgeted: 0, discover: 0
+                }
+                rowSpan = 0;
+                week += 1;
+            }
+        }
+    }
+    //
     // builds an HTML table of ledger data
     function buildLedgerTable(data) {
         var table_args = {
@@ -97,11 +189,11 @@ var LEDGER = (function() {
             },
             table = make_standard_table(table_args),
             tableRows = table.querySelectorAll('TR'),
-            amount, cell;
+            amount, cell, i;
         //
         // styling the amount cell for negative numbers
-        for (var i = 1; i < tableRows.length; i++) {
-            amount = Number(tableRows[i].dataset['amount']);
+        for (i = 1; i < tableRows.length; i++) {
+            amount = Number(tableRows[i].dataset.amount);
             cell = tableRows[i].querySelector('[id*=amount]');
             //
             if (amount < 0) {
@@ -118,6 +210,9 @@ var LEDGER = (function() {
                 cell.style.fontWeight = 'bold';
             }
         }
+        //
+        // generating weekly sums that span rows
+        calculateWeeklySums(table, tableRows)
         //
         document.getElementById('table-div').safeAppendChild(table);
     }
