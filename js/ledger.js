@@ -93,18 +93,18 @@ var LEDGER = (function() {
                 color: 'rgb(0,0,0)'
             },
             cell = document.createElementWithAttr('TD',{rowSpan: rowSpan, style: style}),
-            fmt = '{}';
+            fmt = '%value%';
         //
         if (total < 0) {
-            fmt = '({})';
+            fmt = '(%value%)';
             cell.style.color = 'rgb(240,0,0)';
         }
         //
         cell = cell.cloneNode();
         cell.rowSpan = rowSpan + 1;
         row.appendChild(cell)
-        process_data_type(total, 'monetary', cell)
-        cell.childNodes[1].textContent = fmt.format(Math.round10(total, 2, true));
+        process_data_type(total, 'monetary', cell, {add_commas: true, format_str: fmt});
+        //cell.childNodes[1].textContent = fmt.format(Math.round10(total, 2, true));
     }
     //
     // generates weekly categorial sums
