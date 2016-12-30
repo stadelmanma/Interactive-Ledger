@@ -49,7 +49,7 @@ var LEDGER = (function() {
         var xmlhttp = new XMLHttpRequest();
         //
         xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 0) {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                 callback(xmlhttp.responseText);
             }
         };
@@ -79,7 +79,7 @@ var LEDGER = (function() {
                 datum = datum === 'OK' ? 'YES' : 'NO';
             }
             obj[col_names[index]] = datum;
-            
+
         });
         //
         this[i] = obj;
